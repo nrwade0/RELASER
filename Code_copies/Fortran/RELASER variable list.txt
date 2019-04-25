@@ -1,0 +1,127 @@
+Variable list for RELASER
+
+COMMON /CAVK/      *********************** Laser Cavity Parameters ***********************
+CAVL               Cavity length in cm (read from LASPAR.dat) - P(1)
+CMRAD              the mode radius in cm (read from LASPAR,dat) - P(2)
+CAVAREA            PI*CAVEDIA*CAVDIA/4 in cm^2
+RODL               Rod length in cm (Read from LASPAR.dat) - P(3)
+RODRAD             Radius of the laser rod in cm (Read from LASPAR.dat) - P(4)
+TQ                 Q-switch delay time in microsec, <=0 for no Q-switch
+                   (Read from LASPAR.dat) P(5)
+RESTYPE            RING (1) OR LINEAR (2) RESONATOR (Read from LASPAR.dat) P(6)
+PUMPTYPE           END (1) OR SIDE (2) PUMPING (Read from LASPAR.dat) P(7)
+PABSL              Pump absorption length in cm
+                     If resonator is side pumped then PABSL=2*RODRAD
+                     If resonator is end pumped then PABSL=RODL
+ISWITCH            never used
+
+COMMON /PUMPK/    **************************** Pump Parameters ***************************
+IPUMP             Pump shape function (Read from SPECPAR.dat)
+                  IF  IPUMP=0  THEN CW PUMP
+                            1  THEN RECTANGULAR
+                            2  THEN  SIN(T)*SIN(T)
+                            3  THEN  T * EXP(-T*T)
+                            4  THEN  T * EXP(-T)
+                            5  THEN  1-T
+                            6  THEN  T
+                            7  THEN  SQUARE PULSE TRAIN WITH DUTY CYCLE 0.1 LENGTH FWHM
+                            8  THEN    "      "    "          "     "   0.5   "     "
+FWHM              Pump FWHM pulse duration in microsec (Read from SPECPAR.dat)
+                  IF IPUMP=0 THEN FWHM=NPOINTS*TOUT
+PUMPSIG(4)        Absorption cross section in cm^2 (Read from SPECPAR.dat)
+PUMPE             Pump energy in Joules (Read from SPECPAR.dat, but again in LASPAR.dat)
+PUMPLAM           Pump wavelength in micrometer
+W1                Pump scale factor, W1 = PUMPETA*PUMPE*(PUMPLAM/HC)/(CAVAREA*RODL)
+MANPMP(I,J)       is absorption from manifold #J to manifold #I (Read from SPECPAR.dat)
+                  I ranges from 1 to NPMPLV
+PUMPETA           Net Pump coupling efficiency (Read from SPECPAR.dat)
+PMPALGN           Pump alignment efficiency(Read from SPECPAR.dat)
+NPMPLV            Number of manifolds that can absorb pump light (Read from SPECPAR.dat)
+
+COMMON /CONCK/    ******************* Manifolds and initial number densities *************
+NIONS             Number of ions in host (Read from SPECPAR.dat)
+NMAN(3)           NMAN(K1) is the number of manifolds being considered of ion type ION(K1)
+                  K1 = dummy ion number, ION(K1) = ion type, such as Tm, Ho, Nd, etc...
+                  MAX = NMAN(K1) saves maximum number of manifolds for a given ion
+Y(25)             Y(K) is the number density of manifold K
+                  K is dummy manifold number, MAN(K) is (2S+1)LJ designation of manifold
+TOTLCON(3)        Total number density in all manifolds in all ions
+
+COMMON /DECAY1/   ******************************* Decay Terms ****************************
+NDKTIME           Number of manifold decay times being considered (Read from SPECPAR.dat)
+MANUP(50)         Upper manifold number (Read from SPECPAR.dat)
+                  MANUP(K1), K1 = dummy manifold designation number
+MANLO(50)         Lower manifold number (Read from SPECPAR.dat)
+                  MANLO(K1), K1 = dummy manifold designation number
+DKRATE(50)        DKRATE(K1) = 1/DKTIME
+                  DKTIME = decaytime of transition in microseconds (Read from SPECPAR.dat)
+
+COMMON /DECAY2/   **************************** Energy transfer terms *********************
+NBILIN            Number of energy transfer terms being considered (Read from SPECPAR.dat)
+MANLOS1(20)       Losing manifold 1 number designation (Read from SPECPAR.dat)
+MANLOS2(20)       Losing manifold 2 number designation (Read from SPECPAR.dat)
+MANGAN1(20)       Gaining manifold 1 number designation (Read from SPECPAR.dat)
+MANGAN2(20)       Gaining manifold 2 number designation (Read from SPECPAR.dat)
+CUTOFF(20)        Never used
+BILINRT(20)       Essentially the energy transfer parameter in cm^3/microsec
+                  Gets value through BILINTM (Read through SPECPAR.dat) via >0 check
+NACEPTR(20)       Acceptor ion designation number (Read from SPECPAR.dat)
+
+COMMON /WAVLNG    ************************** Wavelength dependent terms ******************
+NLASLAM           Number of laser wavelengths being considered (Read from SPECPAR.dat)
+MANUPLZ(5)        Upper laser level designation number (Read from SPECPAR.dat)
+MANLOLZ(5)        Lower laser level designation number (Read from SPECPAR.dat)
+EMISLAM(5)        Wavelength of laser emission in micrometers (Read from SPECPAR.dat)
+FRACUP(5)         Upper laser level thermal population (Read from SPECPAR.dat)
+FRACLO(5)         Lower laser level thermal population (Read from SPECPAR.dat)
+STIM(5)           Stimulated emission cross section (Read from SPECPAR.dat)
+SPON(5)           Inverse of Spontaneous emission lifetime (Read from SPECPAR.dat)
+CAVALFA(5)        Bulk cavity losses per cm (Read from SPECPAR.dat)
+                  CAVALFA(I) = 2.0D0*RODL*CAVALPHA(I)/ROUNTT(I)
+REFLOUT(5)        Output coupler reflictivity (Read from SPECPAR.dat)
+                  REFLOUT(I) = (1.0D0-REFLOUT(I))/ROUNDTT(I)
+REFLBCK(5)        Other mirror net reflictivity (Read from SPECPAR.dat)
+                  REFLBCK(I) = (1.0D0-REFLBCK(I))/ROUNDTT(I)
+SURFACET(5)       Intra-cavity surface net transmission (Read from SPECPAR.dat)
+                  SURFACET(I) = 2.0D0 * (1.0D0-SURFACET(I))/ROUNDTT(I)
+RODDEX(5)         index of refraction of laser rod (Read from SPECPAR.dat)
+OPTLNG(5)         OPTLNG(I) = RODL*RODDEX(I)+CAVL-RODL
+SPO(5)            SPO(I) = B*RODL/OPTLNG(I), with B = CAVAREA/(4.0D0*PI*OPTLNG(I)*OPTLNG(I))
+ROUNDTT(5)        Round trip time
+                  ROUNDTT(I) = RESTYPE*OPTLNG(I)/CC (RESTYPE=2 for linear, =1 for ring)
+TEMPER            Temperature in Kelvin
+
+COMMON /TIMEK/    ************************************Time terms**************************
+DELTAT            Step size in microseconds
+NPOINTS           Total number of points
+TOUT              Time interval between points in microseconds
+T                 T=T+DELTAT
+
+COMMON /LSODAK/   ****************************** Integration parameters ******************
+ITOL              
+RTOL              
+ATOL(4)           
+ITASK             
+ISTATE            
+IOPT              
+LRW               
+LIW               
+JT                
+MF                
+H0                
+HMAX              
+HMIN              
+MXSTEP            
+RWORK(84)         
+IWORK(24)         
+
+COMMON /PHYSK/
+CC                Speed of light = 3.0D4 cm/microsec
+HC                Planck's constant * Speed of light = 1.98648D-19 J-micrometer
+PI                4*arctan(1) = 3.141592654
+
+COMMON /WRTBLK/
+NCOL              Number of concentration columns of output (read from specpar.dat)
+JCOL(20)          Number of manifolds to sum (read from specpar.dat)
+ISUM(20,20)       The specific manifolds to sum (read from specpar.dat)
+                  ICOL designates the manifold number 

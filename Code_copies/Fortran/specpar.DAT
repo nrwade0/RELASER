@@ -1,0 +1,50 @@
+         1         2         3         4         5         6         7         8        
+1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
+ NUMBER OF IONS =  2
+ ION NUMBER  1 = TM
+ NUMBER OF Ho MANIFOLDS =  4
+ MANIFOLD  1 = 5I5     AND HAS INITIAL CONCENTRATION OF  0.000D+20
+           2 = 5I6                                       0.000D+20
+           3 = 5I7                                       0.000D+20
+           4 = 5I8                                       0.000D+20
+ ION NUMBER  2 = HO
+ NUMBER OF HO MANIFOLDS =  4
+ MANIFOLD  8 = 5I8     AND HAS INITIAL CONCENTRATION OF  6.980D+19
+           7 = 5I7                                       0.000D+19
+           6 = 5I6                                       0.000D+19
+           5 = 5I5                                       0.000D+19
+ NUMBER OF DECAY TIMES =  4 
+ DECAY TIME  1 FROM MANIFOLD  7 TO  8 = 1.600D+04    tauf HO5I7
+             2                5     6 = 2.000D+01    phonon HO5I5  2.000D+01
+             3                6     8 = 0.000D+03    tauf HO5I6  2.200D+03
+             4                6     7 = 2.200D+03    no phonon HO5I6  2.500D+03
+ NUMBER OF BI-LINEAR PROCESSES =  2           ( DONOR AND ACCEPTOR)
+   1 COMBINES  7 AND  7 YIELDS  5 AND  8 HAS RATE 3.200D-24  ACCEPTOR =  1  p77
+   2           5      8         7      7          4.900D-24  TEMP &HO    1  p58
+ NUMBER OF POSSIBLE WAVELENGTHS =  1 AT A TEMPERATURE OF  300.0 KELVINS
+ WAVELENGTH  1 GOES FROM MANIFOLD  7 TO  8 WAVELENGTH = 2.050D+00
+               HAS UPPER STARK POPULATION = 0.851D-01  LOWER = 0.258D-01
+               STIMULATED EMISSION/ABSORPTION CROSS SECTION = 1.827D-19
+               SPONTANEOUS EMISSION LIFETIME (MICRO SEC)    = 1.400D+04
+               BULK CAVITY LOSSES (PER CM) = 0.000D+00
+               OUTPUT COUPLER REFLECTIVITY = 0.400D-00
+               OTHER MIRROR NET REFLECTIVITY = 0.995D-00
+               INTRA-CAVITY SURFACE NET TRANSMISSION = 1.000D+00
+               ROD INDEX OF REFRACTION = 1.460D+00
+PUMP WAVELENGTH =  1.938
+NUMBER OF MANIFOLDS CAPABLE OF ABSORBING PUMP LIGHT  = 1
+              ABSORBS FROM MANIFOLD  8 TO  7
+              WITH ABS.  CROSS SECTION = 8.560D-21
+              HAS ENERGY (JOULES) 0.000D-02
+              FWHM (MICRO SECOND) 0.000D+03
+              PUMP SHAPE FUNCTION  0
+              NET PUMP COUPLING EFFIC. = 1.000D-00
+              PUMP ALIGNMENT EFFICIENCY= 1.000D-00
+WE WANT 5 CONCENTRATION COLUMNS OF OUTPUT
+  COLUMN  1 CONSISTS OF THE SUM OF  1 MANIFOLDS:  5
+          2                         1             6
+          3                         1             7
+          4                         1             8
+          5                         1             9
+ 0.000D+07
+ 0.000D+07
