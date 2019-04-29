@@ -1,0 +1,301 @@
+Variable list for RELASER MATLAB (1.6)
+Last updated: 04/10/2019 NW
+
+
+
+COMMON /CAVK/      *********************** Laser Cavity Parameters ***********************
+CAVL               Cavity length in cm (Read from LASPAR).
+CMRAD              Cavity (mode) radius in cm (Read from LASPAR).
+CMAREA             Cavity cross sectional area, = pi*cmrad^2 cm^2.
+RODL               Rod length in cm (Read from LASPAR).
+RODRAD             Radius of the laser rod in cm (Read from LASPAR).
+RODAREA            Rod cross sectional area, rodarea = pi*rodrad*rodrad cm^2.
+TQ                 Q-switch delay time in microsec, <=0 for no Q-switch (Read from LASPAR).
+TQI                Q-switch open interval, =0 for none (Read from LASPAR).
+RESTYPE            Ring (1) or Linear (2) resonator (Read from LASPAR).
+PUMPTYPE           End (1) or Side (2) pumping (Read from LASPAR).
+PABSL              Pump absorption length in cm.
+                    if resonator is side pumped then PABSL = 2*rodrad.
+                    if resonator is end pumped then PABSL = rodl.
+
+
+
+COMMON /TIMEK/    **************************** Time Terms ********************************
+DELTAT            Step size in microseconds (Read from LASPAR).
+NPOINTS           Total number of plotted points (Read from LASPAR).
+TOUT              Time interval between points in microseconds (Read from LASPAR).
+T                 Current time, i.e. t = t + deltat for each step.
+
+
+
+COMMON /LASPM/    **************************** Misc. Terms *******************************
+J1MAX             Number of rear reflectors (Read from LASPAR, data, C14).
+BACKRF            Reflectances of rear reflectors (array type) (Read from LASPAR).
+                   Length of backrf is J1MAX.
+REFLB             Current back reflector value in the main loop.
+JMAX              Number of front reflectors (Read from LASPAR, data, C16).
+FRNTRF            Reflectances of front reflectors (array type) (Read from LASPAR).
+                   Length of backrf is JMAX.
+REFL             Current front reflector value in the main loop.
+IMAX              Number of pump energies (Read from LASPAR, data, C18).
+PENERGY           Pump energy lists (array type) (Read from LASPAR).
+                   Length of backrf is IMAX.
+
+
+
+
+                                       LASER-RELATED PARAMETERS
+% --------------------------------------------------------------------------------------------------- %
+                                       SPECTROSCOPIC PARAMETERS
+
+
+
+
+COMMON /CONCK/    ******************* Manifolds and Initial Number Densities *************
+NIONS             Number of ions in host (Read from SPECPAR)
+ION(i)            ion(i) is the ith ion name (String type). i - see below. (Read from SPECPAR)
+NMAN(i)           Nman(i) is the number of manifolds being considered of ion(i) (Read from SPECPAR)
+                   i = dummy ion number. Sometimes referred to as 'K1' in program.
+				    Goes from 1 -> Nions.
+MAN(i)            Name of the ith manifold (String type).
+MAXMAN            The maximum number of manifolds for a given ion (Read from SPECPAR)
+MANCOUNT          Total number of manifolds over all ions.
+Y(K)              Y(K) is the number density of manifold K, where K is a dummy manifold number.
+				   (Initialized in SPECPAR)
+TOTLCON(i)        Total number density in all manifolds for the ith ion (array type).
+
+
+
+COMMON /DECAY1/   ******************************* Decay Terms ****************************
+NDKTIME           Number of manifold decay times being considered (Read from SPECPAR).
+MANUP             Upper manifold number (Read from SPECPAR).
+                   manup(i), i = dummy manifold designation number
+MANLO             Lower manifold number (Read from SPECPAR).
+                   manlo(i), i = dummy manifold designation number
+DKTIME(i)         Decay time of the ith manifold transition in microseconds.
+                   Stored in an array and read from SPECPAR.
+DKRATE(i)         dkrate(i) is the inverse of the ith dktime = 1/dktime(i). 
+                   where i is taken from SPECPAR as an iterator.
+
+
+
+COMMON /DECAY2/   **************************** Energy transfer terms *********************
+NBILIN            Number of energy transfer terms being considered (Read from SPECPAR)
+MANLOS1           Losing manifold 1 number designation (Read from SPECPAR)
+MANLOS2           Losing manifold 2 number designation (Read from SPECPAR)
+MANGAN1           Gaining manifold 1 number designation (Read from SPECPAR)
+MANGAN2           Gaining manifold 2 number designation (Read from SPECPAR)
+BILINTM           Energy transfer parameter temp variable, see bilinrt(Read from SPECPAR).
+BILINRT           Essentially the energy transfer parameter in cm^3/microsec (stored as array).
+                   Gets value through bilintm via > 0 check.
+NACEPTR           Acceptor ion designation number (Read from SPECPAR)
+
+
+
+COMMON /WAVLNG    ************************** Wavelength dependent terms ******************
+TEMPER            Temperature in Kelvin (Read from SPECPAR).
+NLASLAM           Number of laser wavelengths being considered (Read from SPECPAR)
+				   NOTE: each of the variables below are generalized to arrays to allow Nlaslam
+				   to be as high as necessary, i.e. emislam(i) is the laser emission wavelength
+				   of the ith wavelength.
+MANUPLZ           Upper laser level designation number (Read from SPECPAR).
+MANLOLZ           Lower laser level designation number (Read from SPECPAR).
+EMISLAM           Wavelength of laser emission in micrometers (Read from SPECPAR).
+FRACUP            Upper laser level thermal (Stark) population (Read from SPECPAR).
+FRACLO            Lower laser level thermal (Stark) population (Read from SPECPAR).
+STIM              Stimulated emission cross section (Read from SPECPAR).
+SPONLIFE          Spontaneous emission lifetime (Read from SPECPAR).
+SPON              Inverse of sponlife, 1/sponlife.
+CAVALFA           Bulk cavity losses per cm (Initialized from SPECPAR).
+                   To put into cavity lifetime factor:
+				    cavalfa(i) = restype*rodl*cavalfa(i)/roundtt(i)
+REFLOUT           Output coupler reflectivity (Initialized from SPECPAR).
+				   To put into cavity lifetime factor:
+				    Reflout(i) = -log(Reflout(i))/roundtt(i)
+REFLBCK           Other mirror net reflictivity (Initialized from SPECPAR).
+				   To put into cavity lifetime factor:
+				     Reflbck(i) = -log(Reflout(i))/roundtt(i)
+SURFACET          Intra-cavity surface net transmission (Initialized from SPECPAR).
+				   To put into cavity lifetime factor:
+				    surfacet(i) = 2*(1 - surfacet(i))/roundtt(i)
+OPTLNG            Optical cavity length.
+				   Defined as: optlng(i) = rodl*roddex(i) + cavl - rodl
+OPTVOL            Optical cavity volume.
+                   Defined as: optvol = cmarea*optlng(i)*pmpalgn;
+B                 Constant attached to the spontaneous emission factor, spo, see below.
+				   if pumptype = 1
+				    B = cmarea/(4*pi*optlng(i)*optlng(i))
+				   if pumptype = 2
+				    B = rodarea/(4*pi*optlng(i)*optlng(i))
+SPO               Spontaneous emission factor.
+                   Defined as spo(i) = B*rodl/optlng(i), with B defined above.
+OUTSAV            Represents some kind of reflectance factor.
+                   Defined as: outsav(i) = -log(Reflout(i));
+ROUNDTT           Round trip time.
+                   Defined as: roundtt(i) = restype*optlng(i)/c (restype = 1 (ring), 2 (linear))
+RODDEX            Refraction index of laser rod (Read from SPECPAR)
+
+
+
+COMMON /PUMPK/    **************************** Pump Parameters ***************************
+PUMPLAM           Pump wavelength in micrometers.
+NPMPLV            Number of manifolds that can absorb pump light (Read from SPECPAR).
+MANPMP(i,j)       Absorption from manifold j to manifold i (Read from SPECPAR).
+                   i ranges from 1 to Npmplv
+PUMPSIG           Absorption cross section in cm^2 (Read from SPECPAR).
+PUMPE             Pump energy in Joules (Read from SPECPAR, but again in LASPAR).
+FWHM              Pump FWHM pulse duration in microsec (Read from SPECPAR).
+                   if ipump = 0 then FWHM = Npoints*tout.
+IPUMP             Pump shape function (Read from SPECPAR):
+                   if ipump = 0  then CW PUMP
+                              1  then RECTANGULAR
+                              2  then SIN(T)*SIN(T)
+                              3  then T*exp(-T*T)
+                              4  then T*exp(-T)
+                              5  then 1 - T
+                              6  then T
+                              7  then Square pulse train with duty cylce 0.1 length fwhm
+                              8  then Square pulse train with duty cylce 0.5 length fwhm
+PUMPETA           Net pump coupling efficiency (Read from SPECPAR).
+W1                Pump scale factor:
+				   if pumptype = 1 (end pumped)
+				    W1 = pumpeta*pumpe*(pumplam/hc)/(cmarea*rodl)
+				   if pumptype = 2 (side pumped)
+				    W1 = pumpeta*pumpe*(pumplam/hc)/(rodarea*rodl)
+PMPALGN           Pump alignment efficiency (Read from SPECPAR).
+
+
+
+COMMON /COLS/     ************************ Concentration Columns **************************
+NCOL              Number of concentration columns of output (Read from SPECPAR).
+ICOL              Manifold number (acts as an interator, column # = icol) (Read from SPECPAR).
+JCOL              Number of manifolds to sum (Read from SPECPAR).
+ISUM              The specific manifolds to sum (Read from SPECPAR).
+
+
+
+
+                                       SPECTROSCOPIC PARAMETERS
+% --------------------------------------------------------------------------------------------------- %
+                                       MISCELLANEOUS PARAMETERS
+
+
+
+COMMON /ITERV/    ************************** Iterator Variables ****************************
+J                 Through the front reflectors.
+J1                Through the back reflectors.
+K                 Used as common iterator, sometime being assigned from input files as iterator.
+K1/K2/K3/K4       Often used as a dummy manifold number, assigned from input files as iterator.
+N                 Iterator for Npoints.
+NHI               Used as a general end point in for loops, changed frequently 
+NLO               Used as a general start point in for loops, changed frequently
+E                 Iterates through all the pump energies
+I or J            General iterator variables, used frequently.
+
+
+
+COMMON /INTGR/    ************************** Integration Terms *****************************
+NEQ               Number of rate equations = No. of manifolds + No. of wavelengths;
+                   Defined as: NEQ = sum(Nman) + Nlaslam
+NREACT            Number of reactions occuring.
+                   Defined as: Nreact = Ndktime + Nbilin + Npmplv + 8*Nlaslam
+PWIDTH            Pulse width.
+                   Defined as: Pwidth = plsmax - plsmin
+R1LO/R1HI         When R1 is affected by the difference of two separate processes.
+                   R1LO/R1HI represent these two separate processes.
+                   For example, the effects by stimulated emission on upper/lower manifolds
+R8PRIME           This and R8 represent effects of a Q-switch term.
+                   I do not think this is fully functional.
+NTERM             Current reaction term being added.
+REACT             Array that holds the reaction effects for the manifolds.
+YDOT              Changes waiting to occur to the current manifold density Y as a result of
+                   the rate equations.
+TSPAN             The span of time values for each slice in Npoints for integration.
+
+
+
+COMMON /OUTPT/    ***************************** Output Terms *******************************
+ABSENERGY         Absorbed energy (output in datadump).
+EABS              Sum of the absorbed energy (output in perfnum).
+EABS_plot         Storage for EABS to output in GUI for plotting.
+Eout              Energy from out coupling (output to datadump, perfnum).
+IQSWITCH          Q-switch delay. Not currently outputted (commented out in original Fortran)
+M				  Matrix (10x1) used to collect and output row data in perfnum.
+RDENSITY          Currently no working. Supposed to output budget for increasing ion
+                   concentrations.
+RGAIN             Total gains, but is not currently outputted?
+RLOSS             Total losses, but is not currently outputted?
+RNUMBER           Holds contributions to each process.
+                   This val is printed and summed into Rgain/Rloss
+T_PRINT           Holds all values of T as it iterates. T_print is used in the GUI for plots.
+YMAX              Seems to be used to represent the highes value of manifold density.
+                   A small for loop just resets it to Y everytime and it is used to sum Y's?
+YPRINT            Holds the wanted values of Y to be printed in popnum.
+GAIN              General gains. Initialized as stimulated emission, then recalculated.
+                   Not currently outputted anywhere.
+XLOSS             General losses. Initialized as some cavity losses, then recalculated.
+                   Currently outputted to perfnum.
+ICASE             Number of runs. Not currently appropriated.
+IFLAG             Flag if main loop has only ran once. 
+                   if iflag != 1
+                    plsmin = T;
+PLSMIN            Pulse minimum
+PLSMAX            Pulse maximum
+PRINTING_POPS     Holds popnum row data to be printed.
+THRESH            Some kind of threshold that is part of a check on photon density.
+
+
+
+COMMON /DATA/     ********************** Variables Holding I/O Files ************************
+LASPAR            Matrix holding all number data from LASPAR.xlsx.
+                   Data is accessed by cells, i.e. B3 = (2,3).
+NUM_CONCK         Matrix holding all number data from SPECPAR, conck sheet.
+TXT_CONCK         Matrix holding all string data from SPECPAR, conck sheet.
+NUM_DECAY1        Matrix holding all number data from SPECPAR, decay1 sheet.
+NUM_DECAY2        Matrix holding all number data from SPECPAR, decay2 sheet.
+NUM_WAVLNG        Matrix holding all number data from SPECPAR, wavlng sheet.
+NUM_PUMPK         Matrix holding all number data from SPECPAR, pumpk sheet.
+NUM_COLS          Matrix holding all number data from SPECPAR, cols sheet.
+PERFNUM           Holds the file 'perfnum.txt'
+POPNUM            Holds the file 'popnum.txt'
+S                 A MATLAB structure that holds the variables to be passed into a function.
+                   Data is accessed via "S.[variable_name]"
+F                 General file variable for dumpit files.
+FILE_NAME         Holds the current file name, i.e. 'datadump_[e].txt'
+TIME              Holds the current time
+TITLE             Holds the current title, default = 'RELASER'
+
+
+
+COMMON /PHYSK/    ************************** Physical Constants *****************************
+C                 Speed of light = 2.99792 x10^4 cm/microsec
+HC                Planck's constant*Speed of light = 1.98648D-19 J-micrometer
+
+
+
+COMMON /TEMPV/    *************************** Temp Variables *******************************
+GAMMA             
+R1/R2/R3/R4/...
+ R5/R6/R7/R8      Variables used to apply changes in manifold density.
+RR                
+RT                
+T1/T1S            
+T2/T2S            
+T3/T3S            
+ARG               
+DENOM             
+ENERGY            Prints lasing-related processes
+HM                
+IJCOL             
+RECIP             
+SSUM              
+SSUM2             
+
+
+
+
+
+
+
+
+
