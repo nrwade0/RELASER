@@ -35,15 +35,15 @@
 %             ultimately worth it.
 %             - Started placing comments where I can - getting more
 %             familiar with the variable terminology, although some still
-%             elude me (THRESH?)
+%             elude me (THRESH?).
 %
 % Version 1.3 - March 7-13, 2019 NW
 %             - Another major effort in files, but this time in output.
 %             popnum and perfnum are outputted to text files. popnum is
-%             probably best kept as a text file with N (10,000) lines.
-%             However, perfnum could be given as a spreadsheet in excel(The
-%             power of modern programming!). Or possibly .csv if you need
-%             to plot it.
+%             probably best kept as a text file with N lines.
+%             However, perfnum could be given as a spreadsheet in excel 
+%             (The power of modern programming!). Or possibly .csv if you
+%             need to plot it using MATLAB or python.
 %             - Still off about 10 microseconds in pulse width. I'm not sure
 %             what I'm missing for it and it's eating me up. As soon as
 %             that is fixed, I'll have more time for a GUI skeleton.
@@ -56,8 +56,8 @@
 %             to go through line-by-line and comment anyways. Two birds,
 %             one stone?
 %             - Added the dumpin and dumpin2 functions to output a datadump
-%             file. One file per energy. Same formatting as the original
-%             program.
+%             text file. One file per energy. Same formatting as the 
+%             original program.
 %
 % Version 1.5 - March 26-April 5, 2019 NW
 %             - Stopped myself short of changing all the variable names -
@@ -66,7 +66,7 @@
 %             detail. The science is lacking.
 %             - Input excel files now separated into sheets for easier use.
 %             This may slow the program, but I would consider it a worthy
-%             trade-off still.
+%             trade-off.
 %             - Still working to generalize input/output files, but haven't
 %             ventured into a new testing model until the current one is
 %             accurate.
@@ -74,14 +74,18 @@
 %             - Considering the END GOAL is to replicate "Spectroscopy and
 %             modeling of solid state lanthanide lasers: Application..." by
 %             B. Walsh, April 2004, specifically his Fig. 8,9.
-%             - I stopped naming the file with version number since it is
+%             - I stopped naming the file with version numbers since it is
 %             connected to GUI and I don't want to bother tracking down the
 %             necessary changes.
 %             
 % Version 1.6 - April 8-15, 2019 NW  ----------- CURRENT
 %             - GUI has, essentially, been completed.
-%             - Commenting and variable list was completed.
-%             - Pwidth bug not found.
+%             - Commenting and relaser variable list was completed.
+%             - Basic debugging for Pwidth error continued. Found an error
+%             in resetting the initial value of y(9) (photon denisty) to 0.
+%             It sets it to 5...? Not sure where it that happens. Fixed 
+%             this error at the end of import_specpar. See below for more 
+%             information on the Pwidth error.
 %
 % Future updates/issues
 %    - First and foremost, RELASER doesn't give the exact same value as the FORTRAN
@@ -91,9 +95,21 @@
 %     of solid state lanthanide lasers: Application to trivalent Tm3+ and
 %     Ho3+ in YLiF4 and LuLiF4." Will need to scour for parameters from this
 %     paper. Generalize this implementation with any number of parameters.
-%    - Solve using ode15s instead of piecewise integration to increase
-%    code efficiency.
+%    - Solve using ode15s instead of piecewise integration. May get rid of
+%     Pwidth issue, but requires a solid understanding of the program.
+%    - Add extensive commenting (import from FORTRAN, as well)
 %
+% Pwidth error
+%    What I've tried so far: Debugging line-by-line in the CRUNCH() and 
+%    RATEEQ() functions of the Fortran program against relasermain.
+%    Unfortunately, I have yet to find the error. I know it is something
+%    affecting the ydot array of the RATEEQ function but I can't find where
+%    exactly. It seems to be always a ten thousandth of a decimal place
+%    off, which makes me think it is a precision error but MATLAB default =
+%    REAL(8) in Fortran (or so the internet tells me). The dumpit files do
+%    not go into enough detail for REACT() and ydot() which make it
+%    impossible to track the changes.
+% 
 %% --------------------------- PROGRAM PREAMBLE ----------------------------% 
 clc
 clear variables
@@ -562,8 +578,8 @@ function import_specpar()
         Y(i) = num_cols(2+Ncol+i);
     end
     
+    Y(9) = 0;
     
-
     %% --------------------------- SAVE IMPORTED DATA -----------------------%
     % Save data from import_specpar function.
     save('specpar_dump.mat');
@@ -600,19 +616,27 @@ function crunch()
     
     % Threshold density?
     % Unsure as to where these equations originated?
-    thresh = zeros(Nlaslam);            
-%     thrsmn = 1e30;
+    thresh = zeros(Nlaslam);   
+    thrsmn = 1e30;
     for i = 1:Nlaslam
         T1 = 2 - Reflout(i) - Reflbck(i) - 2*surfacet(i) + 2*rodl*cavalfa(i);
         GAMMA = 1 + (FracLo(i)/FracUp(i));
         T2 = restype*stim(i)*rodl*(GAMMA - 1);
         T3 = restype*stim(i)*rodl*GAMMA;
+%         T2 = 2.0*stim(i)*rodl*FracLo(i);
+%         T3 = 2.0*stim(i)*rodl*(FracLo(i) + FracUp(i));
         thresh(i) = totlcon(1);
+%         if(T3 > 0)
+%             thresh(i) = (T1 + T2*totlcon(1))/T3;
+%         end
         thresh(i) = (T1 + T2*totlcon(1))/T3;
-%         thrsmn = thresh(i);
-        T1S = T1;
-        T2S = T2;
-        T3S = T3;
+%         if(thresh(i) < thrsmn)
+            thrsmn = thresh(i);
+            T1S = T1;
+            T2S = T2;
+            T3S = T3;
+%         end
+        
     end
     
     % Passing thru a struct to dumpin()instead of .mat saves on runtime.
@@ -904,6 +928,7 @@ function crunch()
                 if(Y(K1) < .95*(T1S + T2S*(totlcon(1)))/T3S)
                     continue;
                 end
+                
                 plsmax = T;
                 if(iflag == 1)
                     continue;
@@ -924,7 +949,7 @@ function crunch()
             %Y_plot(i,N) = Y(1,i);
         end
         
-        
+        % for writing purposes
         if(e == IMAX)
             Yprint = zeros(Ncol,1);
             fprintf(popnum, '%13.5e ', T); 

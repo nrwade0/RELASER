@@ -34,9 +34,6 @@
 %             - Make variables and arguments from both (and how they
 %             connect) more comprehensible. Might be worth jotting a
 %             relaser gui variable list down, as well.
-%             - POPNUM in Matlab has 80k lines when POPNUM in Fortran only
-%             has 10k lines. Last 10k of POPNUM in M is the equivalent to
-%             the full POPNUM in F.
 %
 %
 % Supress 'not used' error messages in callback functions
