@@ -8,28 +8,28 @@ File list and descriptions:
 
 - *272F_vhist.F* 
 
-  asd
+  Previous version history from the original file. Added for reference.
   
 - *laspar.xlsx*
 
-asd
+  Laser parameters excel sheet.
 
 - *relaser_gui_v2.fig*
 
-asd
+  MATLAB GUIDE .fig file for the GUI.
 
 - *relaser_gui_v2.m*
 
-asd
+  Main GUI file, supports all callback commands for GUI.
 
 - *relasermain.m*
 
-asd
+  Main program file (run here)
 
 - *specpar.xlsx*
 
-asd
+  Spectroscopic parameters excel sheet.
 
 - *variable_list.txt*
 
-asd
+  Comprehensive variable list for *relasermain.m*.
